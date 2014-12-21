@@ -29,4 +29,4 @@ def handle():
     return ("On" if status[0] else "Off") + ", #" + status[1]
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port="5555")
+    app.run(host="0.0.0.0", port=5555)
