@@ -1,5 +1,5 @@
 import pickle
-from flask import Flask, request
+from flask import Flask, request, Response
 from bootstrap import *
 
 app = Flask(__name__)
@@ -26,7 +26,7 @@ def handle():
             with open(filename, "wb") as f:
                 status = (True, "FFFFFFFF")
                 pickle.dump(status, f)
-    return ("On" if status[0] else "Off") + ", #" + status[1]
+    return Response(("On" if status[0] else "Off") + ", #" + status[1], mimetype="text/plain")
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5555)
