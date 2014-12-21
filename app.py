@@ -1,15 +1,32 @@
-from flask import Flask, request
 import pickle
+from flask import Flask, request
+from bootstrap import *
 
 app = Flask(__name__)
+filename = "status.pkl"
 
 
 @app.route("/", methods=["GET", "POST"])
 def handle():
     if request.method == "POST":
-        return "POST"
+        status = (request.form["status"] == "on", request.form["color"])
+        if status[0]:
+            led.fill(color_hex(status[1]))
+            led.update()
+        else:
+            led.all_off()
+
+        with open(filename, "wb") as f:
+            pickle.dump(status, f)
     else:
-        return "GET"
+        try:
+            with open(filename, "rb") as f:
+                status = pickle.load(f)
+        except IOError:
+            with open(filename, "wb") as f:
+                status = (True, "FFFFFFFF")
+                pickle.dump(status, f)
+    return ("On" if status[0] else "Off") + ", #" + status[1]
 
 if __name__ == "__main__":
     app.run()
