@@ -26,7 +26,9 @@ def handle():
             with open(filename, "wb") as f:
                 status = (True, "FFFFFFFF")
                 pickle.dump(status, f)
-    return Response(("On" if status[0] else "Off") + ", #" + status[1], mimetype="text/plain")
+    r = ("On" if status[0] else "Off") + ", #" + status[1]
+    print(r)
+    return Response(r, mimetype="text/plain")
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5555)

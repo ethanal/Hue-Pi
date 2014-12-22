@@ -26,6 +26,7 @@
     __weak ViewController *weakSelf = self;
     
     [self.colorPickerView setDidChangeColorBlock:^(UIColor *color){
+        NSLog(@"%@", color);
         [weakSelf updateStatus];
     }];
 }
@@ -36,6 +37,9 @@
 }
 
 - (IBAction)brightnessSliderChanged:(id)sender {
+    [self updateStatus];
+}
+- (IBAction)switchChanged:(id)sender {
     [self updateStatus];
 }
 
@@ -53,6 +57,7 @@
     NSString *color = [NSString stringWithFormat:@"%02x%02x%02x%02x", r, g, b, a];
     
     AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
+    manager.responseSerializer = [AFHTTPResponseSerializer serializer];
     NSDictionary *parameters = @{@"status": onOff, @"color": color};
     [manager POST:@"http://raspberrypi.home:5555/" parameters:parameters success:^(AFHTTPRequestOperation *operation, id responseObject) {
         NSLog(@"Response: %@", responseObject);
