@@ -23,10 +23,12 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    
+    self.brightnessSlider.continuous = NO;
+    
     __weak ViewController *weakSelf = self;
     
     [self.colorPickerView setDidChangeColorBlock:^(UIColor *color){
-        NSLog(@"%@", color);
         [weakSelf updateStatus];
     }];
 }
@@ -39,9 +41,15 @@
 - (IBAction)brightnessSliderChanged:(id)sender {
     [self updateStatus];
 }
+
+- (IBAction)sliderDidEndEditing:(id)sender {
+    [self updateStatus];
+}
+
 - (IBAction)switchChanged:(id)sender {
     [self updateStatus];
 }
+
 
 - (void)updateStatus {
     NSString *onOff = self.statusSwitch.isOn ? @"on" : @"off";
@@ -56,15 +64,19 @@
     
     NSString *color = [NSString stringWithFormat:@"%02x%02x%02x%02x", r, g, b, a];
     
-    AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
-    manager.responseSerializer = [AFHTTPResponseSerializer serializer];
-    NSDictionary *parameters = @{@"status": onOff, @"color": color};
-    [manager POST:@"http://raspberrypi.home:5555/" parameters:parameters success:^(AFHTTPRequestOperation *operation, id responseObject) {
-        NSLog(@"Response: %@", responseObject);
-    } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-        NSLog(@"Error: %@", error);
-    }];
-    
+    if (color.length == 8) {
+        
+        AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
+        manager.responseSerializer = [AFHTTPResponseSerializer serializer];
+        NSDictionary *parameters = @{@"status": onOff, @"color": color};
+        [manager POST:@"http://raspberrypi.home:5555/" parameters:parameters success:^(AFHTTPRequestOperation *operation, id responseObject) {
+            
+        } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+            NSLog(@"Error: %@", error);
+        }];
+        
+        self.colorView.backgroundColor = [UIColor colorWithRed:rFloat green:gFloat blue:bFloat alpha:(self.brightnessSlider.value / 255.0)];
+    }
 }
 
 @end
